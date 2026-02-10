@@ -1,0 +1,242 @@
+import { useState } from 'react'
+import { ArrowLeft, Briefcase, Phone, MapPin, FileText, CheckCircle } from 'lucide-react'
+import Button from '../common/Button'
+import { apiCall } from '../../config'
+
+export default function BecomeDealerPage({ onBack }) {
+  const [formData, setFormData] = useState({
+    business_name: '',
+    business_address: '',
+    business_phone: '',
+    business_license: ''
+  })
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState(false)
+  
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    })
+  }
+  
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
+    
+    try {
+      const response = await apiCall('/dealer/apply', {
+        method: 'POST',
+        body: JSON.stringify(formData)
+      })
+      
+      if (response.success) {
+        setSuccess(true)
+      }
+    } catch (err) {
+      setError(err.message || 'আবেদন জমা দিতে সমস্যা হয়েছে। আবার চেষ্টা করুন।')
+    } finally {
+      setLoading(false)
+    }
+  }
+  
+  if (success) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="bg-white shadow-sm sticky top-0 z-10">
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <button 
+              onClick={onBack}
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 font-semibold"
+            >
+              <ArrowLeft size={20} />
+              <span>হোমে ফিরে যান</span>
+            </button>
+          </div>
+        </div>
+        
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
+            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <CheckCircle size={48} className="text-green-600" />
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">
+              আবেদন সফলভাবে জমা হয়েছে!
+            </h1>
+            <p className="text-lg text-gray-600 mb-2">
+              আপনার ডিলার আবেদন আমরা পেয়েছি।
+            </p>
+            <p className="text-gray-500 mb-8">
+              আমরা শীঘ্রই আপনার আবেদন যাচাই করে আপনাকে জানাবো। ধৈর্য ধরে অপেক্ষা করুন।
+            </p>
+            <Button
+              onClick={onBack}
+              variant="primary"
+              size="lg"
+            >
+              হোমে ফিরে যান
+            </Button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+  
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white shadow-sm sticky top-0 z-10">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <button 
+            onClick={onBack}
+            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 font-semibold"
+          >
+            <ArrowLeft size={20} />
+            <span>ফিরে যান</span>
+          </button>
+        </div>
+      </div>
+      
+      {/* Content */}
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Hero Section */}
+        <div className="text-center mb-12">
+          <div className="w-20 h-20 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Briefcase size={40} className="text-teal-600" />
+          </div>
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            ডিলার হিসেবে যুক্ত হন
+          </h1>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            আপনার গাড়ি বিক্রয় ব্যবসা আরও বড় করুন। আমাদের প্ল্যাটফর্মে ডিলার হিসেবে যুক্ত হয়ে হাজারো ক্রেতার কাছে পৌঁছান।
+          </p>
+        </div>
+        
+        {/* Benefits */}
+        <div className="bg-gradient-to-br from-teal-50 to-blue-50 rounded-2xl p-8 mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">ডিলার হওয়ার সুবিধা</h2>
+          <div className="grid md:grid-cols-2 gap-4">
+            {[
+              '✓ আনলিমিটেড বিজ্ঞাপন পোস্ট করুন',
+              '✓ ভেরিফাইড ব্যাজ পান',
+              '✓ বিশেষ ডিলার প্রোফাইল',
+              '✓ প্রিমিয়াম সাপোর্ট',
+              '✓ হোম পেজে ফিচার্ড প্রদর্শন',
+              '✓ বিক্রয় রিপোর্ট ও অ্যানালিটিক্স'
+            ].map((benefit, index) => (
+              <div key={index} className="flex items-center gap-3 text-gray-700 font-semibold">
+                {benefit}
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        {/* Application Form */}
+        <div className="bg-white rounded-2xl shadow-lg p-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">আবেদন ফর্ম</h2>
+          
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+              {error}
+            </div>
+          )}
+          
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                ব্যবসার নাম *
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  name="business_name"
+                  value={formData.business_name}
+                  onChange={handleChange}
+                  placeholder="আপনার ডিলারশিপ বা কোম্পানির নাম"
+                  className="w-full px-4 py-3 pl-12 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-primary-500"
+                  required
+                />
+                <Briefcase className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+              </div>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                ব্যবসার ঠিকানা *
+              </label>
+              <div className="relative">
+                <textarea
+                  name="business_address"
+                  value={formData.business_address}
+                  onChange={handleChange}
+                  placeholder="আপনার শোরুম বা অফিসের সম্পূর্ণ ঠিকানা"
+                  className="w-full px-4 py-3 pl-12 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-primary-500"
+                  rows={3}
+                  required
+                />
+                <MapPin className="absolute left-4 top-4 text-gray-400" size={20} />
+              </div>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                ব্যবসার ফোন নম্বর *
+              </label>
+              <div className="relative">
+                <input
+                  type="tel"
+                  name="business_phone"
+                  value={formData.business_phone}
+                  onChange={handleChange}
+                  placeholder="+880 1XXX-XXXXXX"
+                  className="w-full px-4 py-3 pl-12 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-primary-500"
+                  required
+                />
+                <Phone className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+              </div>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                ব্যবসা লাইসেন্স নম্বর (ঐচ্ছিক)
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  name="business_license"
+                  value={formData.business_license}
+                  onChange={handleChange}
+                  placeholder="ট্রেড লাইসেন্স বা TIN নম্বর"
+                  className="w-full px-4 py-3 pl-12 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-primary-500"
+                />
+                <FileText className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+              </div>
+              <p className="text-sm text-gray-500 mt-2">
+                লাইসেন্স নম্বর প্রদান করলে আপনার আবেদন দ্রুত যাচাই হবে
+              </p>
+            </div>
+            
+            <div className="bg-gray-50 rounded-xl p-4">
+              <p className="text-sm text-gray-600">
+                <strong>নোট:</strong> আবেদন জমা দেওয়ার পর আমরা ২-৩ কার্যদিবসের মধ্যে আপনার তথ্য যাচাই করে জানাবো। 
+                যাচাই সফল হলে আপনি ডিলার অ্যাকাউন্ট অ্যাক্টিভ করতে পারবেন।
+              </p>
+            </div>
+            
+            <Button
+              type="submit"
+              variant="primary"
+              size="lg"
+              fullWidth
+              loading={loading}
+            >
+              আবেদন জমা দিন
+            </Button>
+          </form>
+        </div>
+      </div>
+    </div>
+  )
+}
