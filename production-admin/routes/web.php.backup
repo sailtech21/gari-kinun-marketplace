@@ -1,0 +1,115 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\AdminAuthController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\ListingController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\DealerController;
+use App\Http\Controllers\Admin\ReportController;
+use App\Http\Controllers\Admin\SettingController;
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
+// API Health Check Route
+Route::get('/api/health', function () {
+    return response()->json([
+        'status' => 'ok',
+        'timestamp' => now(),
+        'database' => DB::connection()->getDatabaseName(),
+        'stats' => [
+            'listings' => App\Models\Listing::count(),
+            'users' => App\Models\User::count(),
+            'dealers' => App\Models\Dealer::count(),
+            'reports' => App\Models\Report::count(),
+        ]
+    ]);
+});
+
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/login', [AdminAuthController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [AdminAuthController::class, 'login']);
+    
+    Route::middleware('admin.auth')->group(function () {
+        Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        
+        Route::get('/listings', [ListingController::class, 'index'])->name('listings.index');
+        Route::get('/api/listings/stats', [ListingController::class, 'stats'])->name('api.listings.stats');
+        Route::get('/listings/{id}', [ListingController::class, 'show'])->name('listings.show');
+        Route::post('/listings/{id}/status', [ListingController::class, 'updateStatus'])->name('listings.status');
+        Route::delete('/listings/{id}', [ListingController::class, 'destroy'])->name('listings.destroy');
+        Route::post('/listings/bulk-action', [ListingController::class, 'bulkAction'])->name('listings.bulk');
+        
+        Route::get('/users', [UserController::class, 'index'])->name('users.index');
+        Route::get('/users/stats', [UserController::class, 'stats'])->name('users.stats');
+        Route::get('/users/{id}', [UserController::class, 'show'])->name('users.show');
+        Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
+        
+        Route::get('/dealers', [DealerController::class, 'index'])->name('dealers.index');
+        Route::get('/dealers/{id}', [DealerController::class, 'show'])->name('dealers.show');
+        Route::post('/dealers/{id}/status', [DealerController::class, 'updateStatus'])->name('dealers.status');
+        Route::get('/dealers/stats', [DealerController::class, 'stats'])->name('dealers.stats');
+        
+        Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+        Route::get('/reports/stats', [ReportController::class, 'stats'])->name('reports.stats');
+        Route::get('/reports/analytics', [ReportController::class, 'analytics'])->name('reports.analytics');
+        Route::get('/reports/export', [ReportController::class, 'export'])->name('reports.export');
+        Route::get('/reports/{id}', [ReportController::class, 'show'])->name('reports.show');
+        Route::post('/reports/{id}/status', [ReportController::class, 'updateStatus'])->name('reports.status');
+        
+        Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
+        Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
+        Route::post('/settings/categories', [SettingController::class, 'storeCategory'])->name('settings.categories.store');
+        Route::put('/settings/categories/{id}', [SettingController::class, 'updateCategory'])->name('settings.categories.update');
+        Route::delete('/settings/categories/{id}', [SettingController::class, 'deleteCategory'])->name('settings.categories.delete');
+
+        // Banners
+        Route::get("/banners", [App\\Http\\Controllers\\Admin\\BannerController::class, "index"])->name("banners.index");
+        Route::post("/banners", [App\\Http\\Controllers\\Admin\\BannerController::class, "store"])->name("banners.store");
+        Route::get("/banners/{id}", [App\\Http\\Controllers\\Admin\\BannerController::class, "show"])->name("banners.show");
+        Route::put("/banners/{id}", [App\\Http\\Controllers\\Admin\\BannerController::class, "update"])->name("banners.update");
+        Route::delete("/banners/{id}", [App\\Http\\Controllers\\Admin\\BannerController::class, "destroy"])->name("banners.destroy");
+        Route::post("/banners/{id}/toggle", [App\\Http\\Controllers\\Admin\\BannerController::class, "toggleStatus"])->name("banners.toggle");
+
+    // Banners
+    Route::get(x27/bannersx27, [App\Http\Controllers\Admin\BannerController::class, x27indexx27])->name(x27banners.indexx27);
+    Route::post(x27/bannersx27, [App\Http\Controllers\Admin\BannerController::class, x27storex27])->name(x27banners.storex27);
+    Route::get(x27/banners/{id}x27, [App\Http\Controllers\Admin\BannerController::class, x27showx27])->name(x27banners.showx27);
+    Route::put(x27/banners/{id}x27, [App\Http\Controllers\Admin\BannerController::class, x27updatex27])->name(x27banners.updatex27);
+    Route::delete(x27/banners/{id}x27, [App\Http\Controllers\Admin\BannerController::class, x27destroyx27])->name(x27banners.destroyx27);
+    Route::post(x27/banners/{id}/togglex27, [App\Http\Controllers\Admin\BannerController::class, x27toggleStatusx27])->name(x27banners.togglex27);
+    });
+
+// API Health Check Route
+Route::get('/api/health', function () {
+    return response()->json([
+        'status' => 'ok',
+        'timestamp' => now(),
+        'database' => DB::connection()->getDatabaseName(),
+        'stats' => [
+            'listings' => App\Models\Listing::count(),
+            'users' => App\Models\User::count(),
+            'dealers' => App\Models\Dealer::count(),
+            'reports' => App\Models\Report::count(),
+        ]
+    ]);
+});
+});
+
+// API Health Check Route
+Route::get('/api/health', function () {
+    return response()->json([
+        'status' => 'ok',
+        'timestamp' => now(),
+        'database' => DB::connection()->getDatabaseName(),
+        'stats' => [
+            'listings' => App\Models\Listing::count(),
+            'users' => App\Models\User::count(),
+            'dealers' => App\Models\Dealer::count(),
+            'reports' => App\Models\Report::count(),
+        ]
+    ]);
+});
